@@ -1,0 +1,3 @@
+Bot Token: 5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU
+Ozon CLI: 170246
+Ozon Auth: 4ff27aa0-e807-42f0-bb11-6ab376b39356
