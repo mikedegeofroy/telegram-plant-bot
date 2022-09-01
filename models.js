@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 var OrderSchema = new mongoose.Schema({
   posting_number: { type: String, unique: true },
   date: { type: String, required: false },
-  products: { type: Array, required: false }
+  products: { type: Array, required: false },
+  owner: { type: String, required: false }
 }, { collection: "orders", required: false });
 
 var UserSchema = new mongoose.Schema({

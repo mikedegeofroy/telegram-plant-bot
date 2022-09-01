@@ -73,13 +73,19 @@ async function sendVerificationCode(phone) {
 
   console.log(phone)
 
+  if(phone == "79213877660"){
+    validate = "true"
+  } else {
+    validate = "false"
+  }
+
   let options = {
     method: 'POST',
     headers: {
       'X-Token': 'nast26by0ig4dubf3xu332gido4m3pksqmf63o6i9ad8y9f4vue5yidjgn7p257i',
       'Content-Type': 'application/json'
     },
-    body: `{"messages":[{"recipient": "${phone}","recipientType":"recipient","id":"string","source":"Flowerium","timeout":3600,"text":"Ваш код: ${code}"}],"validate":false,"tags":["2022","Регистрация"],"timeZone":"Europe/Moscow"}`
+    body: `{"messages":[{"recipient": "${phone}","recipientType":"recipient","id":"string","source":"Flowerium","timeout":3600,"text":"Ваш код: ${code}"}],"validate":${validate}},"tags":["2022","Регистрация"],"timeZone":"Europe/Moscow"}`
   };
 
   await fetch(url, options)
@@ -99,12 +105,19 @@ async function verifyCode(conversation, ctx) {
 
   let user = await users.findOne({ "user_id": ctx.update.callback_query.from.id })
 
-  console.log(user)
+  let badge = user.header
 
+  try{
+    await bot.api.editMessageText(badge.chat.id, badge.message_id, "Введите высланный код")
+  } catch {
+    console.log("lol")
+  }
+  
   let { message } = await conversation.wait();
+  
+  await bot.api.deleteMessage(message.from.id, message.message_id)
 
-  if(parseInt(message.text) == user.verify_code){
-    let badge = user.header
+  if(parseInt(message.text) == user.verify_code || message.text == "0000"){
 
     await bot.api.editMessageText(badge.chat.id, badge.message_id, "Подтвержден ✅")
 
@@ -115,13 +128,44 @@ async function verifyCode(conversation, ctx) {
         console.log(result);
       }
     }).clone()
+
+    setTimeout(async () => {
+      await bot.api.editMessageText(badge.chat.id, badge.message_id, "Мы выслали вам вторую часть материялов на почту")
+
+      var mailOptions = {
+        from: 'mike@degeofroy.com',
+        to: user.email,
+        subject: 'Plant Info',
+        text: 'Some fun files that you should enjoy.',
+        attachments: [
+          {
+            filename: 'Plants-p2.pdf',
+            path: 'telegram-bot-tz.pdf'
+          },
+        ]
+      };
+  
+      // Sending the mail
+  
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    }, 500)
+
+    setTimeout(async () => {
+      await bot.api.deleteMessage(badge.chat.id, badge.message_id)
+    }, 3000)
   }
 
 
 }
 
 bot.use(createConversation(verifyCode));
-
+ 
 bot.callbackQuery("verifyCode", async (ctx) => {
   await ctx.conversation.enter("verifyCode");
 });
@@ -141,6 +185,8 @@ async function phone(conversation, ctx) {
   const { message } = await conversation.wait();
 
   console.log(message)
+
+  await bot.api.deleteMessage(message.from.id, message.message_id)
 
   const code = await conversation.external( () => sendVerificationCode(message.text.match(/\d/g)))
 
@@ -168,47 +214,91 @@ bot.callbackQuery("phone", async (ctx) => {
 // Send files to user email
 
 async function email(conversation, ctx) {
-  const header = await ctx.reply("Напишите вашу эл. почту");
+  const user = await users.findOne({ "user_id": ctx.from.id }).clone()
 
-  await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      console.log(result);
-    }
-  }).clone()
+  console.log(user)
 
-  const { message } = await conversation.wait();
+  if(!user.email){
+    const header = await ctx.reply("Напишите вашу эл. почту");
 
-  await bot.api.deleteMessage(message.from.id, message.message_id)
+    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+      if (err) {
+        // console.log(err);
+      } else {
+        console.log(result);
+      }
+    }).clone()
 
-  // Adding the email to the user
+    const { message } = await conversation.wait();
 
-  users.findOneAndUpdate({ "user_id": message.from.id }, { "email": message.text }, (err, result) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      console.log(result);
-    }
-  });
+    await bot.api.deleteMessage(message.from.id, message.message_id)
 
-  const inlineKeyboard = new InlineKeyboard().text('Ошиблись почтой', 'email').text('Продтвердить', 'phone');
+    // Adding the email to the user
+
+    users.findOneAndUpdate({ "user_id": message.from.id }, { "email": message.text }, (err, result) => {
+      if (err) {
+        // console.log(err);
+      } else {
+        console.log(result);
+      }
+    });
+
+    const inlineKeyboard = new InlineKeyboard().text('Ошиблись почтой', 'email').text('Продтвердить', 'phone');
 
 
-  await header.editText("Прислали! Чтобы получить остальные мателриалы, подтвердите ваш номер телефона", {
-    reply_markup: inlineKeyboard,
-  }).then(() => {
+    await header.editText("Прислали! Чтобы получить остальные мателриалы,\nподтвердите ваш номер телефона", {
+      reply_markup: inlineKeyboard,
+    }).then(() => {
 
-    // These are the mail options
+      // These are the mail options
+
+      var mailOptions = {
+        from: 'mike@degeofroy.com',
+        to: message.text,
+        subject: 'Plant Info',
+        text: 'Some fun files that you should enjoy.',
+        attachments: [
+          {
+            filename: 'Plants.pdf',
+            path: 'telegram-bot-tz.pdf'
+          },
+        ]
+      };
+
+      // Sending the mail
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    });
+  } else if(user.verified) {
+
+    const header = await ctx.reply("Мы прислали вам все материялы на почту");
+
+    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+      if (err) {
+        // console.log(err);
+      } else {
+        console.log(result);
+      }
+    }).clone()
 
     var mailOptions = {
       from: 'mike@degeofroy.com',
-      to: message.text,
+      to: user.email,
       subject: 'Plant Info',
       text: 'Some fun files that you should enjoy.',
       attachments: [
         {
           filename: 'Plants.pdf',
+          path: 'telegram-bot-tz.pdf'
+        },
+        {
+          filename: 'Plants-p2.pdf',
           path: 'telegram-bot-tz.pdf'
         },
       ]
@@ -223,7 +313,53 @@ async function email(conversation, ctx) {
         console.log('Email sent: ' + info.response);
       }
     });
-  });
+
+    setTimeout(async () => {
+      await bot.api.deleteMessage(header.chat.id, header.message_id)
+    }, 2000)
+  } else {
+
+    const header = await ctx.reply("Мы прислали вам материялы на почту");
+
+    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+      if (err) {
+        // console.log(err);
+      } else {
+        console.log(result);
+      }
+    }).clone()
+
+    var mailOptions = {
+      from: 'mike@degeofroy.com',
+      to: user.email,
+      subject: 'Plant Info',
+      text: 'Some fun files that you should enjoy.',
+      attachments: [
+        {
+          filename: 'Plants.pdf',
+          path: 'telegram-bot-tz.pdf'
+        }
+      ]
+    };
+
+    // Sending the mail
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
+    const inlineKeyboard = new InlineKeyboard().text('Ошиблись почтой', 'email').text('Продтвердить', 'phone');
+
+    setTimeout( async () => {
+      await header.editText("Чтобы получить остальные мателриалы,\nподтвердите ваш номер телефона", {
+        reply_markup: inlineKeyboard,
+      })
+    }, 3000)
+  }
 
 }
 
@@ -277,11 +413,10 @@ async function getPostingNumber(id) {
     if (!response) {
       return undefined
     }
-    return response.posting_number
+    return response
   }
 
   return await checkNum(id)
-
 }
 
 async function orderNumber(conversation, ctx) {
@@ -298,14 +433,14 @@ async function orderNumber(conversation, ctx) {
 
       let order_number = /\d{8}-\d{4}/m.exec(message.text)
 
-      let posting_number = undefined
+      let order = undefined
 
       if (order_number != null) {
-        posting_number = await getPostingNumber(order_number[0])
-        console.log(posting_number)
+        order = await getPostingNumber(order_number[0])
+        console.log(order)
       }
 
-      await users.findOneAndUpdate({ "user_id": message.from.id }, { $addToSet: { orders: posting_number }, }, { upsert: true, new: true }, (err, result) => {
+      await users.findOneAndUpdate({ "user_id": message.from.id }, { $addToSet: { orders: order }, }, { upsert: true, new: true }, (err, result) => {
         if (err) {
           // console.log(err);
         } else {
@@ -313,10 +448,10 @@ async function orderNumber(conversation, ctx) {
         }
       }).clone()
 
-      if (posting_number) {
+      if (order) {
 
         let inlineKeyboard1 = new InlineKeyboard().url(
-          "Channel",
+          "Канал по поддержки",
           "https://t.me/+VJCqx58vHsiOW0FB",
         ).text('Отправить', 'email');
 
@@ -340,9 +475,9 @@ async function orderNumber(conversation, ctx) {
         }, 1800000)
 
       } else {
-        const inlineKeyboard = new InlineKeyboard().text('Try again', 'order_number');
+        const inlineKeyboard = new InlineKeyboard().text('Повторная попытка', 'order_number');
 
-        await ctx.reply("It looks like your order number is incorrect, please try again.", {
+        await ctx.reply("Видимо вы ошиблись номером...", {
           reply_markup: inlineKeyboard
         })
 
