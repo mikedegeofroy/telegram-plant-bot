@@ -73,12 +73,12 @@ async function sendVerificationCode(phone) {
 
   console.log(phone)
 
+  let validate = "false"
+
   if(phone == "79213877660"){
     validate = "true"
-  } else {
-    validate = "false"
   }
-
+  
   let options = {
     method: 'POST',
     headers: {
