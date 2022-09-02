@@ -453,7 +453,9 @@ async function orderNumber(conversation, ctx) {
         let inlineKeyboard1 = new InlineKeyboard().url(
           "Канал по поддержки",
           "https://t.me/+VJCqx58vHsiOW0FB",
-        ).text('Отправить', 'email');
+        )
+
+        // .text('Отправить', 'email');
 
         await statusMessage.editText("Подтвержден ✅")
 
