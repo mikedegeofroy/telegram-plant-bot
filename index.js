@@ -372,7 +372,7 @@ bot.callbackQuery("email", async (ctx) => {
 
 // Verify Order Number
 
-async function getPostingNumber(id) {
+async function getPostingNumber(id, user_id) {
 
   let url = 'https://api-seller.ozon.ru/v2/posting/fbo/list';
 
@@ -409,7 +409,8 @@ async function getPostingNumber(id) {
     .catch(err => console.error('error:' + err))
 
   async function checkNum(id) {
-    let response = await orders.findOne({ "posting_number": { $regex: id } })
+    let response = await orders.findOneAndUpdate({ "posting_number": { $regex: id }, "owner": { $exists: false }, $addToSet: { "owner": user_id  }, }, { upsert: true, new: true }, )
+
     if (!response) {
       return undefined
     }
@@ -423,7 +424,9 @@ async function orderNumber(conversation, ctx) {
 
   console.log("entered convo")
 
-  const statusMessage = await ctx.reply("Введите номер заказа");
+  const statusMessage = await ctx.replyWithPhoto(new InputFile("screenshot.jpg"), {
+    caption: "Введите номер заказа, его можно найти в разделе “заказы“"
+  })
 
   const { message } = await conversation.wait();
 
@@ -436,7 +439,7 @@ async function orderNumber(conversation, ctx) {
       let order = undefined
 
       if (order_number != null) {
-        order = await getPostingNumber(order_number[0])
+        order = await getPostingNumber(order_number[0], message.from.id)
         console.log(order)
       }
 
