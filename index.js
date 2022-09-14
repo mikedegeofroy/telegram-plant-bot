@@ -1,3 +1,26 @@
+// Bot options
+
+let bot_options = {
+  token: "5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU",
+  mail: {
+    from: "mikedegeofroy@gmail.com",
+    subject: "This is the subject",
+    text: 'Some fun files that you should enjoy.',
+    attachments: [
+      {
+        filename: 'Plants-p1.pdf',
+        path: 'telegram-bot-tz.pdf'
+      },
+      {
+        filename: 'Plants-p2.pdf',
+        path: 'telegram-bot-tz.pdf'
+      }
+    ]
+  }
+
+}
+
+
 // Telegram bot
 
 import fetch from 'node-fetch';
@@ -41,7 +64,7 @@ var transporter = nodemailer.createTransport({
 
 // Bot Setup
 
-const bot = new Bot('5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU');
+const bot = new Bot(bot_options.token);
 
 // MongoDB Grammy.js integration
 
@@ -133,16 +156,11 @@ async function verifyCode(conversation, ctx) {
       await bot.api.editMessageText(badge.chat.id, badge.message_id, "Мы выслали вам вторую часть материялов на почту")
 
       var mailOptions = {
-        from: 'mike@degeofroy.com',
+        from: bot_options.mail.from,
         to: user.email,
-        subject: 'Plant Info',
-        text: 'Some fun files that you should enjoy.',
-        attachments: [
-          {
-            filename: 'Plants-p2.pdf',
-            path: 'telegram-bot-tz.pdf'
-          },
-        ]
+        subject: bot_options.mail.subject,
+        text: bot_options.mail.text,
+        attachments: [bot_options.mail.attachments[1]]
       };
   
       // Sending the mail
@@ -252,17 +270,25 @@ async function email(conversation, ctx) {
 
       // These are the mail options
 
+      // var mailOptions = {
+      //   from: 'mike@degeofroy.com',
+      //   to: message.text,
+      //   subject: 'Plant Info',
+      //   text: 'Some fun files that you should enjoy.',
+      //   attachments: [
+      //     {
+      //       filename: 'Plants.pdf',
+      //       path: 'telegram-bot-tz.pdf'
+      //     },
+      //   ]
+      // };
+
       var mailOptions = {
-        from: 'mike@degeofroy.com',
-        to: message.text,
-        subject: 'Plant Info',
-        text: 'Some fun files that you should enjoy.',
-        attachments: [
-          {
-            filename: 'Plants.pdf',
-            path: 'telegram-bot-tz.pdf'
-          },
-        ]
+        from: bot_options.mail.from,
+        to: user.email,
+        subject: bot_options.mail.subject,
+        text: bot_options.mail.text,
+        attachments: [bot_options.mail.attachments[0]]
       };
 
       // Sending the mail
@@ -287,21 +313,29 @@ async function email(conversation, ctx) {
       }
     }).clone()
 
+    // var mailOptions = {
+    //   from: 'mike@degeofroy.com',
+    //   to: user.email,
+    //   subject: 'Plant Info',
+    //   text: 'Some fun files that you should enjoy.',
+    //   attachments: [
+    //     {
+    //       filename: 'Plants.pdf',
+    //       path: 'telegram-bot-tz.pdf'
+    //     },
+    //     {
+    //       filename: 'Plants-p2.pdf',
+    //       path: 'telegram-bot-tz.pdf'
+    //     },
+    //   ]
+    // };
+
     var mailOptions = {
-      from: 'mike@degeofroy.com',
+      from: bot_options.mail.from,
       to: user.email,
-      subject: 'Plant Info',
-      text: 'Some fun files that you should enjoy.',
-      attachments: [
-        {
-          filename: 'Plants.pdf',
-          path: 'telegram-bot-tz.pdf'
-        },
-        {
-          filename: 'Plants-p2.pdf',
-          path: 'telegram-bot-tz.pdf'
-        },
-      ]
+      subject: bot_options.mail.subject,
+      text: bot_options.mail.text,
+      attachments: bot_options.mail.attachments
     };
 
     // Sending the mail
@@ -330,16 +364,11 @@ async function email(conversation, ctx) {
     }).clone()
 
     var mailOptions = {
-      from: 'mike@degeofroy.com',
+      from: bot_options.mail.from,
       to: user.email,
-      subject: 'Plant Info',
-      text: 'Some fun files that you should enjoy.',
-      attachments: [
-        {
-          filename: 'Plants.pdf',
-          path: 'telegram-bot-tz.pdf'
-        }
-      ]
+      subject: bot_options.mail.subject,
+      text: bot_options.mail.text,
+      attachments: [bot_options.mail.attachments[0]]
     };
 
     // Sending the mail
@@ -480,6 +509,7 @@ async function orderNumber(conversation, ctx) {
         }, 1800000)
 
       } else {
+        
         const inlineKeyboard = new InlineKeyboard().text('Повторная попытка', 'order_number');
 
         await ctx.reply("Видимо вы ошиблись номером...", {
