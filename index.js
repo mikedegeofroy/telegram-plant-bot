@@ -14,6 +14,37 @@ let bot_options = {
 
     greeting: "Введите номер заказа, его можно найти в разделе “заказы“",
 
+    url_text: "👻",
+
+    url: "https://t.me/+VJCqx58vHsiOW0FB",
+
+    // These are mailing options
+
+    mail: {
+      from: "mikedegeofroy@gmail.com",
+      subject: "This is the subject",
+      text: 'Some fun files that you should enjoy.',
+      attachments: [
+        {
+          filename: 'Plants-p1.pdf',
+          path: 'telegram-bot-tz.pdf'
+        },
+        {
+          filename: 'Plants-p2.pdf',
+          path: 'telegram-bot-tz.pdf'
+        }
+      ]
+    }
+  },
+
+  // To add a new bot, uncomment these lines
+
+  'halloween': {
+
+    // These are general options
+
+    greeting: "Введите номер заказа, его можно найти в разделе “заказы“",
+
     url_text: "Канал по поддержки",
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
@@ -35,10 +66,7 @@ let bot_options = {
         }
       ]
     }
-  }
-
-  // To add a new bot, uncomment these lines
-
+  },
 }
 
 
@@ -488,12 +516,20 @@ async function orderNumber(conversation, ctx) {
 
       if (order) {
 
-        let inlineKeyboard1 = new InlineKeyboard().url(
-          bot_options[user.code[user.code.length -1]].url_text,
-          bot_options[user.code[user.code.length -1]].url,
-        )
+        let inlineKeyboard1
 
-        // .text('Отправить', 'email');
+        if(bot_options[user.code[user.code.length -1]].mail){
+          inlineKeyboard1 = new InlineKeyboard().url(
+            bot_options[user.code[user.code.length -1]].url_text,
+            bot_options[user.code[user.code.length -1]].url,
+          )
+          .text('Отправить', 'email');
+        } else {
+          inlineKeyboard1 = new InlineKeyboard().url(
+            bot_options[user.code[user.code.length -1]].url_text,
+            bot_options[user.code[user.code.length -1]].url,
+          )
+        }
 
         await statusMessage.editText("Подтвержден ✅")
 
