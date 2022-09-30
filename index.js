@@ -18,7 +18,7 @@ let bot_options = {
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
-    image: "background.jpeg",
+    image: "/files/background.jpeg",
 
     // These are mailing options
 
@@ -28,11 +28,11 @@ let bot_options = {
       html: 'Some fun files that you should enjoy.',
       attachments: [
         {
-          filename: 'Plants-p1.pdf',
+          filename: '/files/Plants-p1.pdf',
           path: 'telegram-bot-tz.pdf'
         },
         {
-          filename: 'Plants-p2.pdf',
+          filename: '/files/Plants-p2.pdf',
           path: 'telegram-bot-tz.pdf'
         }
       ]
@@ -51,7 +51,7 @@ let bot_options = {
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
-    image: "halloween.jpg",
+    image: "/files/halloween.jpg",
 
     // These are mailing options
 
