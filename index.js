@@ -7,23 +7,25 @@ let bot_options = {
   token: "5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU",
 
   // This is the name of the key variable 
-  
+
   'plant': {
 
     // These are general options
 
     greeting: "Введите номер заказа, его можно найти в разделе “заказы“",
 
-    url_text: "👻",
+    url_text: "Канал по поддержки",
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
+
+    image: "background.jpeg",
 
     // These are mailing options
 
     mail: {
-      from: "mikedegeofroy@gmail.com",
+      from: "'Flowerium' junesixth606@mail.ru",
       subject: "This is the subject",
-      text: 'Some fun files that you should enjoy.',
+      html: 'Some fun files that you should enjoy.',
       attachments: [
         {
           filename: 'Plants-p1.pdf',
@@ -43,28 +45,20 @@ let bot_options = {
 
     // These are general options
 
-    greeting: "Введите номер заказа, его можно найти в разделе “заказы“",
+    greeting: "👻 Введите номер заказа, его можно найти в разделе “заказы“ 👻",
 
-    url_text: "Канал по поддержки",
+    url_text: "Канал по поддержки 🎃",
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
+
+    image: "halloween.jpg",
 
     // These are mailing options
 
     mail: {
-      from: "mikedegeofroy@gmail.com",
+      from: "'Booo!' junesixth606@mail.ru",
       subject: "This is the subject",
-      text: 'Some fun files that you should enjoy.',
-      attachments: [
-        {
-          filename: 'Plants-p1.pdf',
-          path: 'telegram-bot-tz.pdf'
-        },
-        {
-          filename: 'Plants-p2.pdf',
-          path: 'telegram-bot-tz.pdf'
-        }
-      ]
+      html: 'Some fun files that you should enjoy. 🎃'
     }
   },
 }
@@ -77,6 +71,7 @@ import fetch from 'node-fetch';
 // Grammy.js imports
 
 import { Bot, InlineKeyboard, session, InputFile, Context } from "grammy";
+import { Menu, MenuRange } from "@grammyjs/menu";
 import { hydrate } from "@grammyjs/hydrate";
 import { conversations, createConversation } from "@grammyjs/conversations";
 
@@ -103,12 +98,14 @@ mongoose.connect(dbURI, { useUnifiedTopology: true, useNewUrlParser: true }, err
 // Email sending options
 
 import nodemailer from 'nodemailer'
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
+let transporter = nodemailer.createTransport({
+  host: "smtp.mail.ru",
+  port: 465,
+  secure: true,
   auth: {
-    user: 'mikedegeofroy',
-    pass: 'pvjfzcnqfnhxfixs'
-  }
+    user: 'junesixth606@mail.ru',
+    pass: '8jaPvJagd0G1TRrbfHMq',
+  },
 });
 
 // Bot Setup
@@ -205,11 +202,11 @@ async function verifyCode(conversation, ctx) {
       await bot.api.editMessageText(badge.chat.id, badge.message_id, "Мы выслали вам вторую часть материялов на почту")
 
       var mailOptions = {
-        from: bot_options[user.code[user.code.length -1]].mail.from,
+        from: bot_options[user.last_code].mail.from,
         to: user.email,
-        subject: bot_options[user.code[user.code.length -1]].mail.subject,
-        text: bot_options[user.code[user.code.length -1]].mail.text,
-        attachments: [bot_options[user.code[user.code.length -1]].mail.attachments[1]]
+        subject: bot_options[user.last_code].mail.subject,
+        html: bot_options[user.last_code].mail.html,
+        attachments: [bot_options[user.last_code].mail.attachments[1]]
       };
 
       // Sending the mail
@@ -281,16 +278,23 @@ bot.callbackQuery("phone", async (ctx) => {
 // Send files to user email
 
 async function email(conversation, ctx) {
-  const user = await users.findOne({ "user_id": ctx.from.id }).clone()
 
-  console.log(user.code)
+  let user = await users.findOne({ "user_id": ctx.from.id }).clone()
+
+  console.log(user.last_code)
+
+  const emailMenu = new InlineKeyboard().text('Ошиблись почтой', "email-oops")
+
+  if (bot_options[user.last_code].mail.attachments ? bot_options[user.last_code].mail.attachments.length > 1 : false) {
+    emailMenu.text('Продтвердить', 'phone')
+  }
 
   if (!user.email) {
     const header = await ctx.reply("Напишите вашу эл. почту");
 
     await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
       if (err) {
-        // console.log(err);
+        console.log(err);
       } else {
         console.log(result);
       }
@@ -302,42 +306,29 @@ async function email(conversation, ctx) {
 
     // Adding the email to the user
 
-    users.findOneAndUpdate({ "user_id": message.from.id }, { "email": message.text }, (err, result) => {
+    user = await users.findOneAndUpdate({ "user_id": message.from.id }, { "email": message.text }, {
+      new: true
+    }, (err, result) => {
       if (err) {
-        // console.log(err);
+        console.log(err);
       } else {
         console.log(result);
       }
-    });
+    }).clone();
 
-    const inlineKeyboard = new InlineKeyboard().text('Ошиблись почтой', 'email').text('Продтвердить', 'phone');
+    console.log(bot_options[user.last_code].mail.attachments.length)
 
-
-    await header.editText("Прислали! Чтобы получить остальные мателриалы,\nподтвердите ваш номер телефона", {
-      reply_markup: inlineKeyboard,
+    await header.editText(`Мы прислали материалы вам на почту! ${bot_options[user.last_code].mail.attachments.length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+      reply_markup: emailMenu,
     }).then(() => {
 
-      // These are the mail options
-
-      // var mailOptions = {
-      //   from: 'mike@degeofroy.com',
-      //   to: message.text,
-      //   subject: 'Plant Info',
-      //   text: 'Some fun files that you should enjoy.',
-      //   attachments: [
-      //     {
-      //       filename: 'Plants.pdf',
-      //       path: 'telegram-bot-tz.pdf'
-      //     },
-      //   ]
-      // };
 
       var mailOptions = {
-        from: bot_options[user.code[user.code.length -1]].mail.from,
+        from: bot_options[user.last_code].mail.from,
         to: user.email,
-        subject: bot_options[user.code[user.code.length -1]].mail.subject,
-        text: bot_options[user.code[user.code.length -1]].mail.text,
-        attachments: [bot_options[user.code[user.code.length -1]].mail.attachments[0]]
+        subject: bot_options[user.last_code].mail.subject,
+        html: bot_options[user.last_code].mail.html,
+        attachments: [bot_options[user.last_code].mail.attachments[0]]
       };
 
       // Sending the mail
@@ -350,6 +341,7 @@ async function email(conversation, ctx) {
         }
       });
     });
+
   } else if (user.verified) {
 
     const header = await ctx.reply("Мы прислали вам все материялы на почту");
@@ -363,11 +355,11 @@ async function email(conversation, ctx) {
     }).clone()
 
     var mailOptions = {
-      from: bot_options[user.code[user.code.length -1]].mail.from,
+      from: bot_options[user.last_code].mail.from,
       to: user.email,
-      subject: bot_options[user.code[user.code.length -1]].mail.subject,
-      text: bot_options[user.code[user.code.length -1]].mail.text,
-      attachments: bot_options[user.code[user.code.length -1]].mail.attachments
+      subject: bot_options[user.last_code].mail.subject,
+      html: bot_options[user.last_code].mail.html,
+      attachments: bot_options[user.last_code].mail.attachments
     };
 
     // Sending the mail
@@ -385,22 +377,12 @@ async function email(conversation, ctx) {
     }, 2000)
   } else {
 
-    const header = await ctx.reply("Мы прислали вам материялы на почту");
-
-    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
-      if (err) {
-        // console.log(err);
-      } else {
-        console.log(result);
-      }
-    }).clone()
-
     var mailOptions = {
-      from: bot_options[user.code[user.code.length -1]].mail.from,
+      from: bot_options[user.last_code].mail.from,
       to: user.email,
-      subject: bot_options[user.code[user.code.length -1]].mail.subject,
-      text: bot_options[user.code[user.code.length -1]].mail.text,
-      attachments: [bot_options[user.code[user.code.length -1]].mail.attachments[0]]
+      subject: bot_options[user.last_code].mail.subject,
+      html: bot_options[user.last_code].mail.html,
+      attachments: [bot_options[user.last_code].mail.attachments[0]]
     };
 
     // Sending the mail
@@ -413,23 +395,76 @@ async function email(conversation, ctx) {
       }
     });
 
-    const inlineKeyboard = new InlineKeyboard().text('Ошиблись почтой', 'email').text('Продтвердить', 'phone');
+    const header = await ctx.reply(`Мы прислали материалы вам на почту! ${bot_options[user.last_code].mail.attachments.length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+      reply_markup: emailMenu,
+    });
 
-    setTimeout(async () => {
-      await header.editText("Чтобы получить остальные мателриалы,\nподтвердите ваш номер телефона", {
-        reply_markup: inlineKeyboard,
-      })
-    }, 3000)
+    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+      if (err) {
+        // console.log(err);
+      } else {
+        console.log(result);
+      }
+    }).clone()
+
   }
 
 }
 
 bot.use(createConversation(email));
 
-
 bot.callbackQuery("email", async (ctx) => {
   await ctx.conversation.enter("email");
 });
+
+bot.callbackQuery("email-oops", async (ctx) => {
+
+  await users.findOneAndUpdate({ "user_id": ctx.from.id }, { $unset: { "email": "" } }).clone();
+
+  await ctx.conversation.enter("email");
+
+});
+
+// Menu Schinanigans
+
+const menu = new Menu("toggle")
+  .dynamic(async (ctx) => {
+    let user = await users.findOne({ "user_id": ctx.from.id }).clone();
+
+    const range = new MenuRange();
+
+    range.url(
+      bot_options[user.last_code].url_text,
+      bot_options[user.last_code].url,
+    );
+
+    if (bot_options[user.last_code].mail) {
+      range.text('Отправить', async (ctx) => {
+        await ctx.conversation.enter("email");
+      })
+        .row()
+        .text(
+          async (ctx) => {
+            let user = await users.findOne({ "user_id": ctx.from.id }).clone();
+
+            return user.subscribed ? "Отписаться от новостей и скидок 🔕" : "Подписаться на новости и скидки 🔔";
+
+          },
+          async (ctx) => {
+
+            let user = await users.findOne({ "user_id": ctx.from.id }).clone();
+
+            await users.findOneAndUpdate(user, { "subscribed": !user.subscribed }).clone();
+
+            ctx.menu.update(); // update the menu!
+          },
+        );
+    }
+
+    return range
+  });
+
+bot.use(menu);
 
 // Verify Order Number
 
@@ -485,15 +520,18 @@ async function orderNumber(conversation, ctx) {
 
   let user = await users.findOne({ "user_id": ctx.from.id }).clone()
 
-  console.log("entered convo")
 
   const statusMessage = await ctx.replyWithPhoto(new InputFile("screenshot.jpg"), {
-    caption: bot_options[user.code[user.code.length -1]].greeting
+    caption: bot_options[user.last_code].greeting
   })
 
   const { message } = await conversation.wait();
 
-  await statusMessage.editText("Секундочку...").then(async () => {
+  //   await statusMessage.editText()
+
+  await bot.api.editMessageCaption(statusMessage.chat.id, statusMessage.message_id, {
+    caption: "Секундочку...",
+  }).then(async () => {
 
     await conversation.external(async () => {
 
@@ -516,42 +554,13 @@ async function orderNumber(conversation, ctx) {
 
       if (order) {
 
-        let inlineKeyboard1
-
-        if(bot_options[user.code[user.code.length -1]].mail){
-          inlineKeyboard1 = new InlineKeyboard().url(
-            bot_options[user.code[user.code.length -1]].url_text,
-            bot_options[user.code[user.code.length -1]].url,
-          )
-          .text('Отправить', 'email');
-        } else {
-          inlineKeyboard1 = new InlineKeyboard().url(
-            bot_options[user.code[user.code.length -1]].url_text,
-            bot_options[user.code[user.code.length -1]].url,
-          )
-        }
-
-        await statusMessage.editText("Подтвержден ✅")
-
-        const badge = await ctx.replyWithPhoto(new InputFile("background.jpeg"), {
-          caption: "Приглашение истечет через 30 минут.", reply_markup: inlineKeyboard1
+        await bot.api.editMessageCaption(statusMessage.chat.id, statusMessage.message_id, {
+          caption: "Подтвержден ✅",
         })
 
-        // , также, мы можем выслать вам дополнительный контент на почту.
-
-        setTimeout(async () => {
-          await ctx.api.deleteMessage(ctx.chat.id, statusMessage.message_id);
-          await ctx.api.deleteMessage(ctx.chat.id, message.message_id)
-        }, 250)
-
-        setTimeout(async () => {
-          inlineKeyboard1 = new InlineKeyboard().text(
-            "Expired"
-          )
-          .row()
-          .text('Подписаться на новости и скидки', 'email');
-          await bot.api.editMessageReplyMarkup(badge.chat.id, badge.message_id, { reply_markup: inlineKeyboard1 })
-        }, 1800000)
+        const badge = await ctx.replyWithPhoto(new InputFile(bot_options[user.last_code].image), {
+          caption: "Приглашение истечет через 30 минут.", reply_markup: menu
+        })
 
       } else {
 
@@ -580,7 +589,7 @@ bot.command("start", async (ctx) => {
 
   let code = ""
 
-  if(bot_options[ctx.match]){
+  if (bot_options[ctx.match]) {
     code = ctx.match
   } else {
     code = "plant"
@@ -588,7 +597,7 @@ bot.command("start", async (ctx) => {
 
   await ctx.conversation.exit()
 
-  await users.findOneAndUpdate({ "user_id": ctx.from.id }, { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "code": code } }, { upsert: true, new: true }, (err, result) => {
+  await users.findOneAndUpdate({ "user_id": ctx.from.id }, { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "codes": code }, "last_code": code }, { upsert: true, new: true }, (err, result) => {
     if (err) {
       // console.log(err);
     } else {

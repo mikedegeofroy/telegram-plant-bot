@@ -17,7 +17,10 @@ var UserSchema = new mongoose.Schema({
   orders: { type: Array, required: false },
   verify_code: { type: Number, required: false },
   verified: { type: Boolean, required: false },
-  header: { type: Object, required: false }
+  header: { type: Object, required: false },
+  subscribed: { type: Boolean, default: true },
+  codes: { type: Array, required: false },
+  last_code: { type: String, required: true }
 }, { collection: "users" });
 
 let orders = mongoose.model("orders", OrderSchema);
