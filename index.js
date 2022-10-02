@@ -23,7 +23,7 @@ let bot_options = {
     // These are mailing options
 
     mail: {
-      from: "Flowerium",
+      from: "Flowerium info@flowerium.ru",
       subject: "This is the subject",
       html: 'Some fun files that you should enjoy.',
       attachments: [
@@ -56,7 +56,7 @@ let bot_options = {
     // These are mailing options
 
     mail: {
-      from: "Booo!",
+      from: "Booo! info@flowerium.ru",
       subject: "This is the subject",
       html: 'Some fun files that you should enjoy. 🎃'
     }
