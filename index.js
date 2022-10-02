@@ -29,11 +29,11 @@ let bot_options = {
       attachments: [
         {
           filename: 'Plants-p1.pdf',
-          path: '/files/telegram-bot-tz.pdf'
+          path: 'files/telegram-bot-tz.pdf'
         },
         {
           filename: 'Plants-p2.pdf',
-          path: '/files/telegram-bot-tz.pdf'
+          path: 'files/telegram-bot-tz.pdf'
         }
       ]
     }
