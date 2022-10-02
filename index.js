@@ -18,7 +18,7 @@ let bot_options = {
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
-    image: "/files/background.jpeg",
+    image: "files/background.jpeg",
 
     // These are mailing options
 
@@ -51,7 +51,7 @@ let bot_options = {
 
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
-    image: "/files/halloween.jpg",
+    image: "files/halloween.jpg",
 
     // These are mailing options
 
