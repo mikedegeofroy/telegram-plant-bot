@@ -28,12 +28,12 @@ let bot_options = {
       html: 'Some fun files that you should enjoy.',
       attachments: [
         {
-          filename: '/files/Plants-p1.pdf',
-          path: 'telegram-bot-tz.pdf'
+          filename: 'Plants-p1.pdf',
+          path: '/files/telegram-bot-tz.pdf'
         },
         {
-          filename: '/files/Plants-p2.pdf',
-          path: 'telegram-bot-tz.pdf'
+          filename: 'Plants-p2.pdf',
+          path: '/files/telegram-bot-tz.pdf'
         }
       ]
     }
