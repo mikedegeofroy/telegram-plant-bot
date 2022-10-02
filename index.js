@@ -103,8 +103,8 @@ let transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'junesixth606@mail.ru',
-    pass: '8jaPvJagd0G1TRrbfHMq',
+    user: 'info@flowerium.ru',
+    pass: 'pPAyErptE3(3',
   },
 });
 
