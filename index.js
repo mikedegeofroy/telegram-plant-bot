@@ -104,7 +104,7 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: 'info@flowerium.ru',
-    pass: 'pPAyErptE3(3',
+    pass: 'ZkMpfxc2LLNtGijMruCv',
   },
 });
 
