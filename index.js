@@ -63,6 +63,12 @@ let bot_options = {
   },
 }
 
+// Webserver
+
+import express from 'express';
+var app = express();
+app.use(express.json())
+
 
 // Telegram bot
 
@@ -616,3 +622,21 @@ bot.catch((error) => {
 })
 
 bot.start();
+
+app.listen(3000, function (err) {
+  if (err) {
+      console.log(err);
+  } else {
+      console.log("listen:3000");
+  }
+});
+
+app.get('/unsubscribe', async (req, res) => {
+
+  res.json({ response: "Unsubscribed user" });
+
+  console.log(req.query)
+
+  await users.findOneAndUpdate(req.query, { "subscribed": false }).clone();
+
+})
