@@ -6,6 +6,8 @@ let bot_options = {
 
   token: "5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU",
 
+  support_url: "https://www.example.com",
+
   // This is the name of the key variable 
 
   'plant': {
@@ -22,21 +24,41 @@ let bot_options = {
 
     // These are mailing options
 
-    mail: {
-      from: "Flowerium info@flowerium.ru",
-      subject: "This is the subject",
-      html: 'Some fun files that you should enjoy.',
-      attachments: [
-        {
-          filename: 'Plants-p1.pdf',
-          path: 'files/telegram-bot-tz.pdf'
-        },
-        {
-          filename: 'Plants-p2.pdf',
-          path: 'files/telegram-bot-tz.pdf'
-        }
-      ]
+    mailing_options: {
+      mail1: {
+        from: "Flowerium info@flowerium.ru",
+        subject: "This is the subject",
+        html: 'Some fun files that you should enjoy.',
+        attachments: [
+          {
+            filename: 'Plants-p1.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: 'Plants-p2.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          }
+        ]
+      },
+
+      mail2: {
+        from: "Flowerium info@flowerium.ru",
+        subject: "This is the subject",
+        html: 'Some fun files that you should enjoy.',
+        attachments: [
+          {
+            filename: 'Plants-p1.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: 'Plants-p2.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          }
+        ]
+      }
+
     }
+
   },
 
   // To add a new bot, uncomment these lines
@@ -55,10 +77,25 @@ let bot_options = {
 
     // These are mailing options
 
-    mail: {
-      from: "Booo! info@flowerium.ru",
-      subject: "This is the subject",
-      html: 'Some fun files that you should enjoy. 🎃'
+    mailing_options: {
+      mail1: {
+        from: "Booo! info@flowerium.ru",
+        subject: "This is the subject",
+        html: '',
+        attachments: [
+          {
+            filename: 'Plants-p1.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          }
+        ]
+      },
+
+      mail2: {
+        from: "Booo! info@flowerium.ru",
+        subject: "This is the subject",
+        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>'
+      }
+
     }
   },
 }
@@ -208,11 +245,11 @@ async function verifyCode(conversation, ctx) {
       await bot.api.editMessageText(badge.chat.id, badge.message_id, "Мы выслали вам вторую часть материялов на почту")
 
       var mailOptions = {
-        from: bot_options[user.last_code].mail.from,
+        from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
         to: user.email,
-        subject: bot_options[user.last_code].mail.subject,
-        html: bot_options[user.last_code].mail.html,
-        attachments: [bot_options[user.last_code].mail.attachments[1]]
+        subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
+        // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)
       };
 
       // Sending the mail
@@ -291,7 +328,7 @@ async function email(conversation, ctx) {
 
   const emailMenu = new InlineKeyboard().text('Ошиблись почтой', "email-oops")
 
-  if (bot_options[user.last_code].mail.attachments ? bot_options[user.last_code].mail.attachments.length > 1 : false) {
+  if (Object.keys(bot_options[user.last_code].mailing_options).length > 1) {
     emailMenu.text('Продтвердить', 'phone')
   }
 
@@ -322,19 +359,19 @@ async function email(conversation, ctx) {
       }
     }).clone();
 
-    console.log(bot_options[user.last_code].mail.attachments.length)
+    console.log(Object.keys(bot_options[user.last_code].mailing_options).length)
 
-    await header.editText(`Мы прислали материалы вам на почту! ${bot_options[user.last_code].mail.attachments.length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+    await header.editText(`Мы прислали материалы вам на почту! ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
       reply_markup: emailMenu,
     }).then(() => {
 
 
       var mailOptions = {
-        from: bot_options[user.last_code].mail.from,
+        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
         to: user.email,
-        subject: bot_options[user.last_code].mail.subject,
-        html: bot_options[user.last_code].mail.html,
-        attachments: [bot_options[user.last_code].mail.attachments[0]]
+        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+        // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
       };
 
       // Sending the mail
@@ -361,11 +398,11 @@ async function email(conversation, ctx) {
     }).clone()
 
     var mailOptions = {
-      from: bot_options[user.last_code].mail.from,
+      from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
       to: user.email,
-      subject: bot_options[user.last_code].mail.subject,
-      html: bot_options[user.last_code].mail.html,
-      attachments: bot_options[user.last_code].mail.attachments
+      subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+      html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+      // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))
     };
 
     // Sending the mail
@@ -384,11 +421,11 @@ async function email(conversation, ctx) {
   } else {
 
     var mailOptions = {
-      from: bot_options[user.last_code].mail.from,
+      from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
       to: user.email,
-      subject: bot_options[user.last_code].mail.subject,
-      html: bot_options[user.last_code].mail.html,
-      attachments: [bot_options[user.last_code].mail.attachments[0]]
+      subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+      html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+      // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
     };
 
     // Sending the mail
@@ -401,7 +438,7 @@ async function email(conversation, ctx) {
       }
     });
 
-    const header = await ctx.reply(`Мы прислали материалы вам на почту! ${bot_options[user.last_code].mail.attachments.length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+    const header = await ctx.reply(`Мы прислали материалы вам на почту! ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
       reply_markup: emailMenu,
     });
 
@@ -444,7 +481,7 @@ const menu = new Menu("toggle")
       bot_options[user.last_code].url,
     );
 
-    if (bot_options[user.last_code].mail) {
+    if (bot_options[user.last_code].mailing_options) {
       range.text('Отправить', async (ctx) => {
         await ctx.conversation.enter("email");
       })
@@ -466,6 +503,8 @@ const menu = new Menu("toggle")
           },
         );
     }
+
+    range.row().url("Поддержка", bot_options.support_url);
 
     return range
   });
@@ -570,7 +609,7 @@ async function orderNumber(conversation, ctx) {
 
       } else {
 
-        const inlineKeyboard = new InlineKeyboard().text('Повторная попытка', 'order_number');
+        const inlineKeyboard = new InlineKeyboard().text('Повторная попытка', 'orderNumber');
 
         await ctx.reply("Видимо вы ошиблись номером...", {
           reply_markup: inlineKeyboard
@@ -586,24 +625,26 @@ async function orderNumber(conversation, ctx) {
 bot.use(createConversation(orderNumber));
 
 bot.callbackQuery("orderNumber", async (ctx) => {
-  await ctx.conversation.enter("order_number");
+  await ctx.conversation.enter("orderNumber");
 });
 
 // Start bot
 
 bot.command("start", async (ctx) => {
 
-  let code = ""
+  let code
+  let options
 
   if (bot_options[ctx.match]) {
-    code = ctx.match
+    console.log("code: " + ctx.match)
+    options = {query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "codes": code }, "last_code": ctx.match }}
   } else {
-    code = "plant"
+    options = {query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name }}
   }
 
   await ctx.conversation.exit()
 
-  await users.findOneAndUpdate({ "user_id": ctx.from.id }, { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "codes": code }, "last_code": code }, { upsert: true, new: true }, (err, result) => {
+  await users.findOneAndUpdate(options.query, options.data,{ upsert: true, new: true }, (err, result) => {
     if (err) {
       // console.log(err);
     } else {
@@ -625,9 +666,9 @@ bot.start();
 
 app.listen(3000, function (err) {
   if (err) {
-      console.log(err);
+    console.log(err);
   } else {
-      console.log("listen:3000");
+    console.log("listen:3000");
   }
 });
 
