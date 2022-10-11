@@ -535,7 +535,7 @@ const menu = new Menu("toggle")
     }
 
     if (bot_options[user.last_code].mailing_options) {
-      range.text('Отправить', async (ctx) => {
+      range.row().text('Отправить', async (ctx) => {
         await ctx.conversation.enter("email");
       })
         .row()
@@ -557,7 +557,7 @@ const menu = new Menu("toggle")
         );
     }
 
-    range.url("Поддержка", bot_options.support_url);
+    range.row().url("Поддержка", bot_options.support_url);
 
     return range
   });
