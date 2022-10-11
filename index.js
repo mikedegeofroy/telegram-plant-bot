@@ -22,6 +22,8 @@ let bot_options = {
 
     image: "files/background.jpeg",
 
+    image_caption: "Успех!",
+
     // These are mailing options
 
     mailing_options: {
@@ -74,6 +76,8 @@ let bot_options = {
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
     image: "files/halloween.jpg",
+
+    image_caption: "",
 
     // These are mailing options
 
@@ -244,13 +248,24 @@ async function verifyCode(conversation, ctx) {
     setTimeout(async () => {
       await bot.api.editMessageText(badge.chat.id, badge.message_id, "Мы выслали вам вторую часть материялов на почту")
 
-      var mailOptions = {
-        from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
-        to: user.email,
-        subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
-        html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
-        // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)
-      };
+      var mailOptions;
+
+      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)) {
+        mailOptions = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
+          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)
+        };
+      } else {
+        mailOptions = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[1].html
+        };
+      }
 
       // Sending the mail
 
@@ -365,14 +380,25 @@ async function email(conversation, ctx) {
       reply_markup: emailMenu,
     }).then(() => {
 
+      var mailOptions;
 
-      var mailOptions = {
-        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
-        to: user.email,
-        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
-        html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
-        // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
-      };
+      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)) {
+        mailOptions = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
+        };
+      } else {
+        mailOptions = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+        };
+      }
+      
 
       // Sending the mail
 
@@ -397,13 +423,26 @@ async function email(conversation, ctx) {
       }
     }).clone()
 
-    var mailOptions = {
-      from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
-      to: user.email,
-      subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
-      html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
-      // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))
-    };
+    var mailOptions;
+
+    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))){
+      mailOptions = {
+        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+        to: user.email,
+        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+        attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))
+      };
+    } else {
+      mailOptions = {
+        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+        to: user.email,
+        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+      };
+    }
+
+    
 
     // Sending the mail
 
@@ -420,13 +459,25 @@ async function email(conversation, ctx) {
     }, 2000)
   } else {
 
-    var mailOptions = {
-      from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
-      to: user.email,
-      subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
-      html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
-      // attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
-    };
+    var mailOptions;
+
+    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)){
+      mailOptions = {
+        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+        to: user.email,
+        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
+        attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
+      };
+    } else {
+      mailOptions = {
+        from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
+        to: user.email,
+        subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
+        html: Object.values(bot_options[user.last_code].mailing_options)[0].html
+      };
+    }
+
 
     // Sending the mail
 
@@ -476,10 +527,12 @@ const menu = new Menu("toggle")
 
     const range = new MenuRange();
 
-    range.url(
-      bot_options[user.last_code].url_text,
-      bot_options[user.last_code].url,
-    );
+    if (bot_options[user.last_code].url) {
+      range.url(
+        bot_options[user.last_code].url_text,
+        bot_options[user.last_code].url,
+      );
+    }
 
     if (bot_options[user.last_code].mailing_options) {
       range.text('Отправить', async (ctx) => {
@@ -504,7 +557,7 @@ const menu = new Menu("toggle")
         );
     }
 
-    range.row().url("Поддержка", bot_options.support_url);
+    range.url("Поддержка", bot_options.support_url);
 
     return range
   });
@@ -604,7 +657,7 @@ async function orderNumber(conversation, ctx) {
         })
 
         const badge = await ctx.replyWithPhoto(new InputFile(bot_options[user.last_code].image), {
-          caption: "Приглашение истечет через 30 минут.", reply_markup: menu
+          caption: bot_options[user.last_code].image_caption, reply_markup: menu
         })
 
       } else {
@@ -637,14 +690,14 @@ bot.command("start", async (ctx) => {
 
   if (bot_options[ctx.match]) {
     console.log("code: " + ctx.match)
-    options = {query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "codes": code }, "last_code": ctx.match }}
+    options = { query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name, $addToSet: { "codes": code }, "last_code": ctx.match } }
   } else {
-    options = {query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name }}
+    options = { query: { "user_id": ctx.from.id }, data: { "username": ctx.from.username, "first_name": ctx.from.first_name, "last_name": ctx.from.last_name } }
   }
 
   await ctx.conversation.exit()
 
-  await users.findOneAndUpdate(options.query, options.data,{ upsert: true, new: true }, (err, result) => {
+  await users.findOneAndUpdate(options.query, options.data, { upsert: true, new: true }, (err, result) => {
     if (err) {
       // console.log(err);
     } else {
