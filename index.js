@@ -84,7 +84,7 @@ let bot_options = {
       mail1: {
         from: "Booo! info@flowerium.ru",
         subject: "👻Ваши игры на Хэллоуин👻",
-        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>',
+        html: '<h1>👻Ваши игры на Хэллоуин👻</h1>',
         attachments: [
           {
             filename: '1. Правда или дело.pdf',
@@ -367,7 +367,7 @@ async function email(conversation, ctx) {
   let phoneMenu;
 
   if (Object.keys(bot_options[user.last_code].mailing_options).length > 1) {
-    phoneMenu = new InlineKeyboard().text('Продтвердить', 'phone')
+    phoneMenu = new InlineKeyboard().text('Да', 'phone')
   }
 
   if (!user.email) {
@@ -396,7 +396,7 @@ async function email(conversation, ctx) {
     }).then(() => {
 
       setTimeout(async () => {
-        const header = await ctx.reply("Чтобы получить остальные мателриалы, подтвердите ваш номер телефона.", {
+        const header = await ctx.reply("Спасибо, что Вы доверились нам! Мы хотели бы сделать вам дополнительный подарок и подготовили мальенький сюрприз. Вам его отправить?", {
           reply_markup: phoneMenu,
         })
 
@@ -407,7 +407,7 @@ async function email(conversation, ctx) {
             console.log(result);
           }
         }).clone()
-      }, 3000)
+      }, 120000)
 
       var mailOptions;
 
@@ -550,7 +550,7 @@ async function email(conversation, ctx) {
     }).then(() => {
 
       setTimeout(async () => {
-        let header = await ctx.reply("Чтобы получить остальные мателриалы, подтвердите ваш номер телефона.", {
+        let header = await ctx.reply("Спасибо, что Вы доверились нам! Мы хотели бы сделать вам дополнительный подарок и подготовили мальенький сюрприз. Вам его отправить?", {
           reply_markup: phoneMenu,
         })
 
@@ -561,7 +561,7 @@ async function email(conversation, ctx) {
             console.log(result);
           }
         }).clone()
-      }, 3000)
+      }, 120000)
 
       // ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}
     });
