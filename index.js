@@ -16,13 +16,13 @@ let bot_options = {
 
     greeting: "Введите номер заказа, его можно найти в разделе “заказы“",
 
-    url_text: "Канал по поддержки",
-
-    url: "https://t.me/+VJCqx58vHsiOW0FB",
-
     image: "files/background.jpeg",
 
     image_caption: "Успех!",
+
+    url: "https://t.me/+VJCqx58vHsiOW0FB",
+
+    url_text: "Канал по поддержки",
 
     // These are mailing options
 
@@ -71,13 +71,13 @@ let bot_options = {
 
     greeting: "👻 Введите номер заказа, его можно найти в разделе “заказы“ 👻",
 
-    url_text: "Канал по поддержки 🎃",
-
-    url: "https://t.me/+VJCqx58vHsiOW0FB",
-
     image: "files/halloween.jpg",
 
-    image_caption: "",
+    image_caption: "Hello",
+
+    url_text: "Канал по поддержки 🎃",
+    
+    url: "https://t.me/+VJCqx58vHsiOW0FB",
 
     // These are mailing options
 
@@ -97,7 +97,7 @@ let bot_options = {
       mail2: {
         from: "Booo! info@flowerium.ru",
         subject: "This is the subject",
-        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>'
+        html: '<h1>Hello</h1>'
       }
 
     }
@@ -250,20 +250,20 @@ async function verifyCode(conversation, ctx) {
 
       var mailOptions;
 
-      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)) {
+      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]){
         mailOptions = {
           from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
           to: user.email,
           subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
           html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
-          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments)
+          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]
         };
       } else {
         mailOptions = {
           from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
           to: user.email,
           subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
-          html: Object.values(bot_options[user.last_code].mailing_options)[1].html
+          html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
         };
       }
 
@@ -343,20 +343,14 @@ async function email(conversation, ctx) {
 
   const emailMenu = new InlineKeyboard().text('Ошиблись почтой', "email-oops")
 
+  let phoneMenu;
+  
   if (Object.keys(bot_options[user.last_code].mailing_options).length > 1) {
-    emailMenu.text('Продтвердить', 'phone')
+    phoneMenu = new InlineKeyboard().text('Продтвердить', 'phone')
   }
 
   if (!user.email) {
-    const header = await ctx.reply("Напишите вашу эл. почту");
-
-    await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(result);
-      }
-    }).clone()
+    await ctx.reply("Напишите вашу эл. почту");
 
     const { message } = await conversation.wait();
 
@@ -376,19 +370,33 @@ async function email(conversation, ctx) {
 
     console.log(Object.keys(bot_options[user.last_code].mailing_options).length)
 
-    await header.editText(`Мы прислали материалы вам на почту! ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+    await header.editText(`Мы прислали материалы вам на почту!`, {
       reply_markup: emailMenu,
-    }).then(() => {
+    }).then( () => {
+
+      setTimeout(async () => {
+        const header = await ctx.reply("Чтобы получить остальные мателриалы, подтвердите ваш номер телефона.", {
+          reply_markup: phoneMenu,
+        })
+
+        await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        }).clone()
+      }, 3000)
 
       var mailOptions;
 
-      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)) {
+      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]){
         mailOptions = {
           from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
           to: user.email,
           subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
           html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
-          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)
+          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]
         };
       } else {
         mailOptions = {
@@ -423,18 +431,18 @@ async function email(conversation, ctx) {
       }
     }).clone()
 
-    var mailOptions;
+    var mailOptions1;
 
-    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))){
-      mailOptions = {
+    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]){
+      mailOptions1 = {
         from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
         to: user.email,
         subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
         html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
-        attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments).concat(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1].attachments))
+        attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]
       };
     } else {
-      mailOptions = {
+      mailOptions1 = {
         from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
         to: user.email,
         subject: Object.values(bot_options[user.last_code].mailing_options)[0].subject,
@@ -442,17 +450,44 @@ async function email(conversation, ctx) {
       };
     }
 
-    
-
     // Sending the mail
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    transporter.sendMail(mailOptions1, function (error, info) {
       if (error) {
         console.log(error);
       } else {
         console.log('Email sent: ' + info.response);
       }
     });
+
+    if(Object.values(bot_options[user.last_code].mailing_options)[1]){
+      var mailOptions2;
+
+      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]){
+        mailOptions2 = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
+          attachments: Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]
+        };
+      } else {
+        mailOptions2 = {
+          from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
+          to: user.email,
+          subject: Object.values(bot_options[user.last_code].mailing_options)[1].subject,
+          html: Object.values(bot_options[user.last_code].mailing_options)[1].html,
+        };
+      }
+
+      transporter.sendMail(mailOptions2, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    }
 
     setTimeout(async () => {
       await bot.api.deleteMessage(header.chat.id, header.message_id)
@@ -489,8 +524,25 @@ async function email(conversation, ctx) {
       }
     });
 
-    const header = await ctx.reply(`Мы прислали материалы вам на почту! ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}`, {
+    const header = await ctx.reply(`Мы прислали материалы вам на почту!`, {
       reply_markup: emailMenu,
+    }).then(() => {
+
+      setTimeout(async () => {
+        let header = await ctx.reply("Чтобы получить остальные мателриалы, подтвердите ваш номер телефона.", {
+          reply_markup: phoneMenu,
+        })
+
+        await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        }).clone()
+      }, 3000)
+
+      // ${Object.keys(bot_options[user.last_code].mailing_options).length > 1 ? "Чтобы получить остальные мателриалы, подтвердите ваш номер телефона." : ""}
     });
 
     await users.findOneAndUpdate({ "user_id": ctx.from.id }, { header: header }, { upsert: true, new: true }, (err, result) => {
