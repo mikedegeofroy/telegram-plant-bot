@@ -33,11 +33,11 @@ let bot_options = {
         html: 'Some fun files that you should enjoy.',
         attachments: [
           {
-            filename: 'Plants-p1.pdf',
+            filename: '1. Правда или дело.pdf',
             path: 'files/telegram-bot-tz.pdf'
           },
           {
-            filename: 'Plants-p2.pdf',
+            filename: '2. Вы бы лучше.pdf',
             path: 'files/telegram-bot-tz.pdf'
           }
         ]
@@ -58,7 +58,6 @@ let bot_options = {
           }
         ]
       }
-
     }
 
   },
@@ -76,7 +75,7 @@ let bot_options = {
     image_caption: "Hello",
 
     url_text: "Канал по поддержки 🎃",
-    
+
     url: "https://t.me/+VJCqx58vHsiOW0FB",
 
     // These are mailing options
@@ -84,11 +83,23 @@ let bot_options = {
     mailing_options: {
       mail1: {
         from: "Booo! info@flowerium.ru",
-        subject: "This is the subject",
-        html: '',
+        subject: "👻Ваши игры на Хэллоуин👻",
+        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>',
         attachments: [
           {
-            filename: 'Plants-p1.pdf',
+            filename: '1. Правда или дело.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: '2. Вы бы лучше.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: '3. Охота за сокровищами.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: '4. Крокодил.pdf',
             path: 'files/telegram-bot-tz.pdf'
           }
         ]
@@ -96,8 +107,18 @@ let bot_options = {
 
       mail2: {
         from: "Booo! info@flowerium.ru",
-        subject: "This is the subject",
-        html: '<h1>Hello</h1>'
+        subject: "Еще бонусы!🎃",
+        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>',
+        attachments: [
+          {
+            filename: '5. Семейная вражда.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          },
+          {
+            filename: '6. Слепить Джек-Фонарь.pdf',
+            path: 'files/telegram-bot-tz.pdf'
+          }
+        ]
       }
 
     }
@@ -250,7 +271,7 @@ async function verifyCode(conversation, ctx) {
 
       var mailOptions;
 
-      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]){
+      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]) {
         mailOptions = {
           from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
           to: user.email,
@@ -344,7 +365,7 @@ async function email(conversation, ctx) {
   const emailMenu = new InlineKeyboard().text('Ошиблись почтой', "email-oops")
 
   let phoneMenu;
-  
+
   if (Object.keys(bot_options[user.last_code].mailing_options).length > 1) {
     phoneMenu = new InlineKeyboard().text('Продтвердить', 'phone')
   }
@@ -372,7 +393,7 @@ async function email(conversation, ctx) {
 
     await header.editText(`Мы прислали материалы вам на почту!`, {
       reply_markup: emailMenu,
-    }).then( () => {
+    }).then(() => {
 
       setTimeout(async () => {
         const header = await ctx.reply("Чтобы получить остальные мателриалы, подтвердите ваш номер телефона.", {
@@ -390,7 +411,7 @@ async function email(conversation, ctx) {
 
       var mailOptions;
 
-      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]){
+      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]) {
         mailOptions = {
           from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
           to: user.email,
@@ -406,7 +427,7 @@ async function email(conversation, ctx) {
           html: Object.values(bot_options[user.last_code].mailing_options)[0].html,
         };
       }
-      
+
 
       // Sending the mail
 
@@ -433,7 +454,7 @@ async function email(conversation, ctx) {
 
     var mailOptions1;
 
-    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]){
+    if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[0])[3]) {
       mailOptions1 = {
         from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
         to: user.email,
@@ -460,10 +481,10 @@ async function email(conversation, ctx) {
       }
     });
 
-    if(Object.values(bot_options[user.last_code].mailing_options)[1]){
+    if (Object.values(bot_options[user.last_code].mailing_options)[1]) {
       var mailOptions2;
 
-      if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]){
+      if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]) {
         mailOptions2 = {
           from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
           to: user.email,
@@ -496,7 +517,7 @@ async function email(conversation, ctx) {
 
     var mailOptions;
 
-    if(Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)){
+    if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[0].attachments)) {
       mailOptions = {
         from: Object.values(bot_options[user.last_code].mailing_options)[0].from,
         to: user.email,
