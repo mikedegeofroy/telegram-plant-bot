@@ -83,8 +83,8 @@ let bot_options = {
     mailing_options: {
       mail1: {
         from: "Booo! info@flowerium.ru",
-        subject: "👻Ваши игры на Хэллоуин👻",
-        html: '<h1>👻Ваши игры на Хэллоуин👻</h1>',
+        subject: "👻 Ваши игры на Хэллоуин 👻",
+        html: '<h1>👻 Ваши игры на Хэллоуин 👻</h1>',
         attachments: [
           {
             filename: '1. Правда или дело.pdf',
