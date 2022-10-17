@@ -6,7 +6,7 @@ let bot_options = {
 
   token: "5596272178:AAH1yClgbyUJHgZhGbyVa5Kqb8w1rEk4pjU",
 
-  support_url: "https://www.example.com",
+  support_url: "https://t.me/internetbonuses",
 
   // This is the name of the key variable 
 
@@ -72,11 +72,7 @@ let bot_options = {
 
     image: "files/halloween.jpg",
 
-    image_caption: "Hello",
-
-    url_text: "Канал по поддержки 🎃",
-
-    url: "https://t.me/+VJCqx58vHsiOW0FB",
+    image_caption: "С наступающим праздником!",
 
     // These are mailing options
 
@@ -88,19 +84,19 @@ let bot_options = {
         attachments: [
           {
             filename: '1. Правда или дело.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/1.\ Правда\ или\ дело.pdf'
           },
           {
             filename: '2. Вы бы лучше.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/2.\ Вы\ бы\ лучше.pdf'
           },
           {
             filename: '3. Охота за сокровищами.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/3.\ Охота\ за\ сокровищами.pdf'
           },
           {
             filename: '4. Крокодил.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/4.\ Крокодил.pdf'
           }
         ]
       },
@@ -108,15 +104,15 @@ let bot_options = {
       mail2: {
         from: "Booo! info@flowerium.ru",
         subject: "Еще бонусы!🎃",
-        html: '<div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;"> <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe></div>',
+        html: '<h1>Еще бонусы!🎃<h1>',
         attachments: [
           {
             filename: '5. Семейная вражда.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/5.\ Семейная\ вражда.pdf'
           },
           {
             filename: '6. Слепить Джек-Фонарь.pdf',
-            path: 'files/telegram-bot-tz.pdf'
+            path: 'files/6.\ Слепить\ Джек-Фонарь.pdf'
           }
         ]
       }
@@ -172,7 +168,7 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: 'info@flowerium.ru',
-    pass: 'ZkMpfxc2LLNtGijMruCv',
+    pass: 'typdksHGia9s5kk9s4R7',
   },
 });
 
@@ -210,10 +206,10 @@ async function sendVerificationCode(phone) {
 
   console.log(phone)
 
-  let validate = "false"
+  let validate = false;
 
   if (phone == "79213877660") {
-    validate = "true"
+    validate = true;
   }
 
   let options = {
@@ -222,7 +218,7 @@ async function sendVerificationCode(phone) {
       'X-Token': 'nast26by0ig4dubf3xu332gido4m3pksqmf63o6i9ad8y9f4vue5yidjgn7p257i',
       'Content-Type': 'application/json'
     },
-    body: `{"messages":[{"recipient": "${phone}","recipientType":"recipient","id":"string","source":"Flowerium","timeout":3600,"text":"Ваш код: ${code}"}],"validate":${validate}},"tags":["2022","Регистрация"],"timeZone":"Europe/Moscow"}`
+    body: `{"messages":[{"recipient":"${phone}","recipientType":"recipient","id":"string","source":"Flowerium","timeout":3600,"text":"Ваш код: ${code}"}],"validate": ${validate},"tags":["2022","Регистрация"],"timeZone":"Europe/Moscow"}`
   };
 
   await fetch(url, options)
@@ -366,12 +362,14 @@ async function email(conversation, ctx) {
 
   let phoneMenu;
 
+  console.log(Object.keys(bot_options[user.last_code].mailing_options));
+  
   if (Object.keys(bot_options[user.last_code].mailing_options).length > 1) {
     phoneMenu = new InlineKeyboard().text('Да', 'phone')
   }
 
   if (!user.email) {
-    await ctx.reply("Напишите вашу эл. почту");
+    const header = await ctx.reply("Напишите вашу эл. почту");
 
     const { message } = await conversation.wait();
 
@@ -483,7 +481,8 @@ async function email(conversation, ctx) {
 
     if (Object.values(bot_options[user.last_code].mailing_options)[1]) {
       var mailOptions2;
-
+      Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]
+      // console.log(Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]);
       if (Object.values(Object.values(bot_options[user.last_code].mailing_options)[1])[3]) {
         mailOptions2 = {
           from: Object.values(bot_options[user.last_code].mailing_options)[1].from,
@@ -608,7 +607,7 @@ const menu = new Menu("toggle")
     }
 
     if (bot_options[user.last_code].mailing_options) {
-      range.row().text('Отправить', async (ctx) => {
+      range.row().text('Получить игры', async (ctx) => {
         await ctx.conversation.enter("email");
       })
         .row()
